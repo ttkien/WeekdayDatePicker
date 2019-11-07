@@ -8,7 +8,7 @@
 
 #import <Foundation/NSException.h>
 #import <UIKit/UIPickerView.h>
-
+#import "Configuration.h"
 #import "BoSDatePickerInitialValueSetup.h"
 #import "BoSWeekdayDatePickerDelegateDataSource.h"
 #import "BoSWeekdayDatePickerCalendar.h"
@@ -30,7 +30,20 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
 
   NSInteger weekdayRow = [dataSource weekdayRowForDateComponentValue:currentDateComponents.weekday];
   NSInteger dayRow = [dataSource dayRowForDateComponentValue:currentDateComponents.day];
-  NSInteger monthRow = [dataSource monthRowForDateComponentValue:currentDateComponents.month];
+    
+    NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
+      [dateFormatterMM setDateFormat:@"MM"];
+      
+      NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
+      [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
+
+              NSString * dateString = [NSString stringWithFormat: @"%li", currentDateComponents.month];
+          NSDate* myDate = [dateFormatterMM dateFromString:dateString];
+          NSString *stringFromDate = [dateFormatterMMMM stringFromDate:myDate];
+      
+
+    
+  NSInteger monthRow = [dataSource monthRowForDateComponentValue:stringFromDate];
   NSInteger yearRow = [dataSource yearRowForDateComponentValue:currentDateComponents.year];
 
   BOOL initialDateOutOfRange = (dayRow == NSNotFound || monthRow == NSNotFound || yearRow == NSNotFound);

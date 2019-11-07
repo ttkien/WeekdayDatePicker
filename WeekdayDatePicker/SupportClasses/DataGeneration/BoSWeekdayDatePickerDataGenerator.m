@@ -8,7 +8,7 @@
 
 #import <Foundation/NSCalendar.h>
 #import <Foundation/NSException.h>
-
+#import "Configuration.h"
 #import "BoSWeekdayDatePickerDataGenerator.h"
 #import "BoSArrayOfComponentsFactory.h"
 #import "NSDate+BoSSwap.h"
@@ -68,17 +68,40 @@
 
 - (NSArray *)monthsArrayForYear:(NSInteger)year
 {
+    NSArray *arrayOfMonths = nil;
   NSAssert(self.minDateComponents, @"Min limit components required!");
   if (year == self.minDateComponents.year) {
-    return [self.componentsFactory valuesOfUnit:NSCalendarUnitMonth fromComponent:self.minDateComponents];
-  }
+    arrayOfMonths = [self.componentsFactory valuesOfUnit:NSCalendarUnitMonth fromComponent:self.minDateComponents];
+  } else {
 
-  NSAssert(self.maxDateComponents, @"Max limit components required!");
+      NSAssert(self.maxDateComponents, @"Max limit components required!");
+
   if (year == self.maxDateComponents.year) {
-    return [self.componentsFactory valuesOfUnit:NSCalendarUnitMonth toComponent:self.maxDateComponents];
+    arrayOfMonths = [self.componentsFactory valuesOfUnit:NSCalendarUnitMonth toComponent:self.maxDateComponents];
+  } else {
+      arrayOfMonths = [self.componentsFactory arrayOfMonthsForYear:year];
   }
+  }
+    
+    return [self monthStrings:arrayOfMonths];
+}
 
-  return [self.componentsFactory arrayOfMonthsForYear:year];
+- (NSArray *)monthStrings:(NSArray *)arrayOfMonths {
+    NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
+      [dateFormatterMM setDateFormat:@"MM"];
+      
+      NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
+      [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
+
+      NSMutableArray *resultArray = [NSMutableArray array];
+      for (NSNumber *month in arrayOfMonths) {
+              NSString * dateString = [NSString stringWithFormat: @"%@", month];
+          NSDate* myDate = [dateFormatterMM dateFromString:dateString];
+          NSString *stringFromDate = [dateFormatterMMMM stringFromDate:myDate];
+          [resultArray addObject:stringFromDate];
+      }
+         
+    return resultArray;
 }
 
 - (NSArray *)daysArrayForDate:(NSDate *)date

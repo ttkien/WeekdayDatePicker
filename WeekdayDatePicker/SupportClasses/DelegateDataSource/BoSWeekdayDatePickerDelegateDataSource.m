@@ -71,22 +71,22 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
 
 - (NSInteger)weekdayRowForDateComponentValue:(NSInteger)value
 {
-  return [self rowForDateComponentValue:value pickerComponent:BoSWeekdaysComponentNumber];
+  return [self rowForDateComponentValue:@(value) pickerComponent:BoSWeekdaysComponentNumber];
 }
 
 - (NSInteger)dayRowForDateComponentValue:(NSInteger)value
 {
-  return [self rowForDateComponentValue:value pickerComponent:self.componentsOrderManager.daysRowNumber];
+  return [self rowForDateComponentValue:@(value) pickerComponent:self.componentsOrderManager.daysRowNumber];
 }
 
-- (NSInteger)monthRowForDateComponentValue:(NSInteger)value
+- (NSInteger)monthRowForDateComponentValue:(NSString *)value
 {
   return [self rowForDateComponentValue:value pickerComponent:self.componentsOrderManager.monthRowNumber];
 }
 
 - (NSInteger)yearRowForDateComponentValue:(NSInteger)value
 {
-  return [self rowForDateComponentValue:value pickerComponent:self.componentsOrderManager.yearRowNumber];
+  return [self rowForDateComponentValue:@(value) pickerComponent:self.componentsOrderManager.yearRowNumber];
 }
 
 
@@ -112,16 +112,19 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
   self.daysDataArray = [self.dataGenerator daysArrayForDate:selectedDate];
 }
 
-- (NSInteger)rowForDateComponentValue:(NSInteger)value pickerComponent:(NSInteger)pickerComponent
+- (NSInteger)rowForDateComponentValue:(id)value pickerComponent:(NSInteger)pickerComponent
 {
   if (pickerComponent == BoSWeekdaysComponentNumber) {
-    return (value - 1);
+    return ([value integerValue]  - 1);
   }
-
+    
   NSArray *componentDataArray = [self dataArrayForComponent:pickerComponent];
   NSAssert(componentDataArray, @"Unsupported component");
+    if (pickerComponent == self.componentsOrderManager.monthRowNumber) {
+            return (NSInteger)[componentDataArray indexOfObject:value];
+      }
 
-  return (NSInteger)[componentDataArray indexOfObject:[NSString stringWithFormat:@"%li", (long)value]];
+  return (NSInteger)[componentDataArray indexOfObject:value];
 }
 
 
@@ -208,7 +211,7 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
   NSDate *selectedDate = [self selectedDateInPickerView:pickerView];
 
   NSInteger newWeekdayValue = [[BoSWeekdayDatePickerCalendar sharedInstance].calendar components:NSCalendarUnitWeekday fromDate:selectedDate].weekday;
-  NSInteger weekdayRow = [self rowForDateComponentValue:newWeekdayValue pickerComponent:BoSWeekdaysComponentNumber];
+  NSInteger weekdayRow = [self rowForDateComponentValue:@(newWeekdayValue) pickerComponent:BoSWeekdaysComponentNumber];
 
   NSAssert(weekdayRow >= 0 && weekdayRow < (NSInteger)self.weekDayNamesArray.count , @"Weekday row is out of range!");
 
@@ -251,7 +254,10 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
 - (void)pointRow:(NSInteger)row ofPickerView:(UIPickerView *)pickerView intoPreviouslySelectedValue:(NSString *)previouslySelectedValue withNewArray:(NSArray *)regeneratedArray
 {
   if ([regeneratedArray containsObject:previouslySelectedValue]) {
-    NSInteger newCorrespondingRow = [self rowForDateComponentValue:[previouslySelectedValue integerValue] pickerComponent:row];
+      
+//      NSInteger selectedMonthNumber = [self monthNumberFromString:previouslySelectedValue];
+
+    NSInteger newCorrespondingRow = [self rowForDateComponentValue:previouslySelectedValue pickerComponent:row];
     [pickerView selectRow:newCorrespondingRow inComponent:row animated:NO];
     return;
   }
@@ -270,21 +276,32 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
   NSArray *componentDataArray = [self dataArrayForComponent:component];
   NSAssert(indexOfSelectedRow >= 0 && indexOfSelectedRow < (NSInteger)componentDataArray.count, @"Index out of range.");
 
-  return componentDataArray[(NSUInteger)indexOfSelectedRow];
+    if (component == self.componentsOrderManager.monthRowNumber) {
+        return componentDataArray[(NSUInteger)indexOfSelectedRow];
+    } else {
+        return componentDataArray[(NSUInteger)indexOfSelectedRow];
+    }
 }
 
-- (NSDate *)selectedDateInPickerView:(UIPickerView *)pickerView
-{
-  NSInteger selectedDayNumber = [[self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.daysRowNumber] integerValue];
-    NSString *monthString = [self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.monthRowNumber];
+- (NSInteger)monthNumberFromString:(NSString *)monthString {
     
     NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
     [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
     NSDate *date = [dateFormatterMMMM dateFromString: monthString];
     NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
     [dateFormatterMM setDateFormat:@"MM"];
-    NSInteger selectedMonthNumber = [[dateFormatterMM stringFromDate:date] integerValue];
-    
+     return [[dateFormatterMM stringFromDate:date] integerValue];
+}
+
+- (NSDate *)selectedDateInPickerView:(UIPickerView *)pickerView
+{
+  NSInteger selectedDayNumber = [[self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.daysRowNumber] integerValue];
+    NSString *monthString = [self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.monthRowNumber];
+
+    if ([monthString isEqual: @"1"]) {
+        NSString *monthString = [self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.monthRowNumber];
+    }
+    NSInteger selectedMonthNumber = [self monthNumberFromString:monthString];
   NSInteger selectedYearNumber = [[self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.yearRowNumber] integerValue];
 
   NSInteger maxDayNumber = [self.dateUnitsUtility numberOfDaysForMonthNumber:selectedMonthNumber yearNumber:selectedYearNumber];

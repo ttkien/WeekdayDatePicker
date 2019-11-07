@@ -62,7 +62,13 @@ static const NSInteger BoSNumberOfFirstUnit = 1;
     endUnitValue = [self.dateUnitsUtility numberOfMonthsInYearNumber:startComponent.year];
   }
 
-  return [self arrayOfValuesFrom:startUnitValue to:endUnitValue];
+  NSArray *arrayOfValues = [self arrayOfValuesFrom:startUnitValue to:endUnitValue];
+    
+    if (unit == NSCalendarUnitMonth) {
+        return [self monthStrings:arrayOfValues];
+    } else {
+        return arrayOfValues;
+    }
 }
 
 - (NSArray *)valuesOfUnit:(NSCalendarUnit)unit toComponent:(NSDateComponents *)endComponent
@@ -78,22 +84,27 @@ static const NSInteger BoSNumberOfFirstUnit = 1;
 
 - (NSArray *)arrayOfMonthsForYear:(NSInteger)year
 {
-  NSArray *arrayOfMonths = [self arrayOfValuesFrom:BoSNumberOfFirstUnit to:[self.dateUnitsUtility numberOfMonthsInYearNumber:year]];
+  return  [self arrayOfValuesFrom:BoSNumberOfFirstUnit to:[self.dateUnitsUtility numberOfMonthsInYearNumber:year]];
    
-    NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
-    [dateFormatterMM setDateFormat:@"MM"];
-    
-    NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
-    [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
+  
+//    return [self monthStrings:arrayOfMonths];
+}
 
-    NSMutableArray *resultArray = [NSMutableArray array];
-    for (NSNumber *month in arrayOfMonths) {
-            NSString * dateString = [NSString stringWithFormat: @"%@", month];
-        NSDate* myDate = [dateFormatterMM dateFromString:dateString];
-        NSString *stringFromDate = [dateFormatterMMMM stringFromDate:myDate];
-        [resultArray addObject:stringFromDate];
-    }
-       
+- (NSArray *)monthStrings:(NSArray *)arrayOfMonths {
+    NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
+      [dateFormatterMM setDateFormat:@"MM"];
+
+      NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
+      [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
+
+      NSMutableArray *resultArray = [NSMutableArray array];
+      for (NSNumber *month in arrayOfMonths) {
+              NSString * dateString = [NSString stringWithFormat: @"%@", month];
+          NSDate* myDate = [dateFormatterMM dateFromString:dateString];
+          NSString *stringFromDate = [dateFormatterMMMM stringFromDate:myDate];
+          [resultArray addObject:stringFromDate];
+      }
+
     return resultArray;
 }
 
