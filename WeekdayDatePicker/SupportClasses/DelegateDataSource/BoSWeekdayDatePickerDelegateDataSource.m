@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UILabel.h>
+#import "Configuration.h"
 #import "BoSWeekdayDatePickerDelegateDataSource.h"
 #import "BoSWeekdayDatePickerDataGenerator.h"
 #import "BoSWeekdayDatePickerAppearance.h"
@@ -275,7 +276,15 @@ FOUNDATION_EXTERN const NSInteger BoSWeekdaysComponentNumber;
 - (NSDate *)selectedDateInPickerView:(UIPickerView *)pickerView
 {
   NSInteger selectedDayNumber = [[self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.daysRowNumber] integerValue];
-  NSInteger selectedMonthNumber = [[self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.monthRowNumber] integerValue];
+    NSString *monthString = [self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.monthRowNumber];
+    
+    NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
+    [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
+    NSDate *date = [dateFormatterMMMM dateFromString: monthString];
+    NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
+    [dateFormatterMM setDateFormat:@"MM"];
+    NSInteger selectedMonthNumber = [[dateFormatterMM stringFromDate:date] integerValue];
+    
   NSInteger selectedYearNumber = [[self selectedObjectInPickerView:pickerView inComponent:self.componentsOrderManager.yearRowNumber] integerValue];
 
   NSInteger maxDayNumber = [self.dateUnitsUtility numberOfDaysForMonthNumber:selectedMonthNumber yearNumber:selectedYearNumber];

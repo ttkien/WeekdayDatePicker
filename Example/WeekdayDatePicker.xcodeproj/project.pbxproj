@@ -119,6 +119,7 @@
 		1EC93E351B83C5410092B8AF /* BoSWeekdayDatePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoSWeekdayDatePicker.h; sourceTree = "<group>"; };
 		355EE54554731F2A9543CC6D /* libPods-WeekdayDatePickerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WeekdayDatePickerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3652F473A7CDA0978E6E2400 /* libPods-DaysOfWeekDatePickerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DaysOfWeekDatePickerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E609C13B237410E200995572 /* Configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Configuration.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +258,7 @@
 				1E581F861AFF796500DFCFE2 /* BoSWeekdayDatePickerDataGenerator.m */,
 				1E581F871AFF796500DFCFE2 /* NSDateComponents+BoSComponentValue.h */,
 				1E581F881AFF796500DFCFE2 /* NSDateComponents+BoSComponentValue.m */,
+				E609C13B237410E200995572 /* Configuration.h */,
 			);
 			path = DataGeneration;
 			sourceTree = "<group>";
@@ -430,6 +432,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 				pl,

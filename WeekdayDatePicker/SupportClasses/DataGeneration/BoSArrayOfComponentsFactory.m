@@ -6,11 +6,13 @@
 //  Copyright (c) 2015 Marcin Hawro. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSArray.h>
 #import "BoSArrayOfComponentsFactory.h"
 #import "NSDateComponents+BoSComponentValue.h"
 #import "BoSDateUnitsUtility.h"
+#import "Configuration.h"
 
 static const NSInteger BoSNumberOfFirstUnit = 1;
 
@@ -76,7 +78,23 @@ static const NSInteger BoSNumberOfFirstUnit = 1;
 
 - (NSArray *)arrayOfMonthsForYear:(NSInteger)year
 {
-  return [self arrayOfValuesFrom:BoSNumberOfFirstUnit to:[self.dateUnitsUtility numberOfMonthsInYearNumber:year]];
+  NSArray *arrayOfMonths = [self arrayOfValuesFrom:BoSNumberOfFirstUnit to:[self.dateUnitsUtility numberOfMonthsInYearNumber:year]];
+   
+    NSDateFormatter* dateFormatterMM = [[NSDateFormatter alloc] init];
+    [dateFormatterMM setDateFormat:@"MM"];
+    
+    NSDateFormatter* dateFormatterMMMM = [[NSDateFormatter alloc] init];
+    [dateFormatterMMMM setDateFormat:MONTH_FORMAT];
+
+    NSMutableArray *resultArray = [NSMutableArray array];
+    for (NSNumber *month in arrayOfMonths) {
+            NSString * dateString = [NSString stringWithFormat: @"%@", month];
+        NSDate* myDate = [dateFormatterMM dateFromString:dateString];
+        NSString *stringFromDate = [dateFormatterMMMM stringFromDate:myDate];
+        [resultArray addObject:stringFromDate];
+    }
+       
+    return resultArray;
 }
 
 - (NSArray *)arrayOfDaysForDateComponent:(NSDateComponents *)component
